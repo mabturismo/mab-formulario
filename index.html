@@ -1,0 +1,2877 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light only" />
+<meta name="supported-color-schemes" content="light" />
+<meta name="theme-color" content="#1a1a1a" />
+<title>MAB Turismo — Sua próxima viagem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --green: #7bbe1a;
+    --green-dark: #6aa615;
+    --green-soft: #f4faea;
+    --green-tint: #fafdf5;
+    --ink: #1a1a1a;
+    --ink-soft: #3a3a3a;
+    --gray-700: #5a5a5a;
+    --gray-500: #9a9a9a;
+    --gray-300: #e4e4e4;
+    --gray-200: #ededed;
+    --gray-100: #f7f7f5;
+    --gray-50: #fbfbfa;
+    --white: #ffffff;
+    --error: #d94545;
+    --radius: 12px;
+    --radius-sm: 10px;
+    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light only;
+    background: #fbfbfa;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--gray-50);
+    color: var(--ink);
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Dark hero band that holds the title */
+  .hero-band {
+    background: var(--ink);
+    padding: 64px 22px 56px;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-band::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(123,190,26,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-band::after {
+    content: '';
+    position: absolute;
+    bottom: -150px;
+    left: -100px;
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle, rgba(123,190,26,0.10) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 40px 22px 60px;
+  }
+
+  /* Hero — title + subtitle in white over dark band */
+  .hero {
+    text-align: center;
+    max-width: 580px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .inspire-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.08);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 100px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all var(--transition);
+    margin-bottom: 32px;
+  }
+
+  .inspire-btn:hover {
+    background: var(--green);
+    border-color: var(--green);
+    transform: translateY(-1px);
+  }
+
+  .inspire-btn .sparkle {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .inspire-btn .arrow {
+    width: 12px;
+    height: 12px;
+    transition: transform var(--transition);
+    opacity: 0.7;
+  }
+
+  .inspire-btn:hover .arrow {
+    transform: translateX(3px);
+    opacity: 1;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(30px, 6vw, 42px);
+    line-height: 1.1;
+    color: var(--white);
+    letter-spacing: -1.2px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--green);
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Form card */
+  .form-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 18px;
+    padding: 12px 6px;
+  }
+
+  /* Field block */
+  .field {
+    padding: 26px;
+    border-bottom: 1px solid var(--gray-200);
+    animation: fadeUp 0.4s ease backwards;
+  }
+
+  .field:last-of-type { border-bottom: none; }
+  .field:nth-child(1) { animation-delay: 0.04s; }
+  .field:nth-child(2) { animation-delay: 0.08s; }
+  .field:nth-child(3) { animation-delay: 0.12s; }
+  .field:nth-child(4) { animation-delay: 0.16s; }
+  .field:nth-child(5) { animation-delay: 0.20s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .field-num {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .field-num .num {
+    color: var(--green-dark);
+    font-weight: 700;
+  }
+
+  .field-num .line {
+    width: 24px;
+    height: 1px;
+    background: var(--gray-300);
+  }
+
+  .question {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 19px;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .helper {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .required {
+    color: var(--green-dark);
+    margin-left: 2px;
+  }
+
+  /* Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--white);
+    transition: all var(--transition);
+    -webkit-appearance: none;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--gray-500);
+    font-weight: 400;
+  }
+
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(123,190,26,0.12);
+  }
+
+  input:disabled {
+    background: var(--gray-100);
+    color: var(--gray-500);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.55;
+  }
+
+  /* Date row */
+  .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .date-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Choice cards */
+  .choices {
+    display: grid;
+    gap: 8px;
+  }
+
+  .choices.cols-2 { grid-template-columns: 1fr 1fr; }
+  .choices.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .choice {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .choice-content {
+    padding: 13px 16px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    gap: 6px;
+  }
+
+  .choice:hover .choice-content {
+    border-color: var(--gray-500);
+    background: var(--gray-50);
+  }
+
+  .choice input:checked + .choice-content {
+    border-color: var(--green);
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-weight: 600;
+  }
+
+  /* List style for budget */
+  .choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .choice-list .choice-content {
+    text-align: left;
+    justify-content: flex-start;
+    padding: 13px 16px;
+  }
+
+  .choice-list .choice-content::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+    transition: all var(--transition);
+  }
+
+  .choice-list .choice input:checked + .choice-content::before {
+    border-color: var(--green-dark);
+    background: var(--green);
+    box-shadow: inset 0 0 0 3px var(--white);
+  }
+
+  /* Number stepper */
+  .number-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--white);
+    transition: all var(--transition);
+  }
+
+  .number-stepper:focus-within {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(123,190,26,0.12);
+  }
+
+  .number-stepper button {
+    width: 42px;
+    height: 46px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--green-dark);
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+
+  .number-stepper button:hover {
+    background: var(--green-soft);
+  }
+
+  .number-stepper input {
+    width: 60px;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 0;
+    background: transparent;
+  }
+
+  .number-stepper input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* Conditional */
+  .conditional {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.35s ease;
+  }
+
+  .conditional.show {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 12px;
+  }
+
+  /* Submit */
+  .submit-row {
+    padding: 26px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .submit-btn:hover {
+    background: var(--green-dark);
+    transform: translateY(-1px);
+  }
+
+  .submit-btn:active { transform: translateY(0); }
+
+  .submit-btn .arrow { transition: transform var(--transition); }
+  .submit-btn:hover .arrow { transform: translateX(3px); }
+
+  .submit-note {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Success */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 30px;
+  }
+
+  .success-screen.show {
+    display: block;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--green-soft);
+    border: 1.5px solid var(--green);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-dark);
+    animation: scaleIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+
+  .success-screen h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+
+  .success-screen p {
+    color: var(--gray-700);
+    margin-bottom: 28px;
+    font-size: 15px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .success-screen .whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--green);
+    color: var(--white);
+    padding: 14px 24px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all var(--transition);
+  }
+
+  .success-screen .whatsapp-link:hover {
+    background: var(--green-dark);
+    transform: translateY(-1px);
+  }
+
+  /* Errors */
+  .field.error input,
+  .field.error textarea {
+    border-color: var(--error);
+  }
+
+  .field.error .number-stepper { border-color: var(--error); }
+
+  .error-msg {
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 8px;
+    display: none;
+    font-weight: 500;
+  }
+
+  .field.error .error-msg { display: block; }
+
+  /* Footer */
+  .footer-note {
+    text-align: center;
+    margin-top: 36px;
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+  }
+
+  .footer-note strong {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .footer-note .sep {
+    margin: 0 8px;
+    color: var(--gray-300);
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .container { padding: 28px 16px 40px; }
+    .field { padding: 22px 20px; }
+    .submit-row { padding: 22px 20px; }
+    .hero h1 { font-size: 28px; }
+    .choices.cols-3 { grid-template-columns: 1fr; }
+    .date-row { grid-template-columns: 1fr; }
+  }
+
+  /* ========================================== */
+  /* ADMIN UI                                   */
+  /* ========================================== */
+  body.is-admin > .container,
+  body.is-admin > .hero-band,
+  body.is-admin > .footer-note {
+    display: none !important;
+  }
+
+  .admin-root { display: none; }
+  body.is-admin .admin-root { display: block; }
+
+  body.is-admin {
+    background: var(--gray-50);
+  }
+
+  /* LOGIN */
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-screen::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(123,190,26,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .login-card .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .login-card .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .login-card h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .login-card .sub {
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+
+  .login-card label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .login-card input[type="password"] {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 15px;
+    background: var(--white);
+    transition: all var(--transition);
+  }
+
+  .login-card input[type="password"]:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(123,190,26,0.12);
+  }
+
+  .login-card .login-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .login-card .login-btn:hover { background: var(--green-dark); }
+
+  .login-error {
+    color: var(--error);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 14px;
+    display: none;
+  }
+
+  .login-error.show { display: block; }
+
+  /* APP */
+  .admin-app { display: none; }
+  .admin-app.show { display: block; }
+
+  .topbar {
+    background: var(--ink);
+    color: var(--white);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .topbar-brand .mark {
+    width: 26px;
+    height: 26px;
+    background: var(--green);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .topbar-brand .lbl {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    margin-left: 6px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .topbar-actions { display: flex; gap: 8px; }
+
+  .topbar-btn {
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--transition);
+  }
+
+  .topbar-btn:hover { background: rgba(255,255,255,0.18); }
+  .topbar-btn.danger:hover { background: rgba(217,69,69,0.3); }
+
+  .tabs {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    padding: 16px 4px;
+    margin-right: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-500);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition);
+  }
+
+  .tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--green);
+  }
+
+  .tab:hover { color: var(--ink-soft); }
+
+  .tab-panel { display: none; padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .stat-card .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+
+  .stat-card .stat-value .accent { color: var(--green-dark); }
+
+  .filters {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .filters input,
+  .filters select {
+    padding: 10px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--white);
+    transition: all var(--transition);
+  }
+
+  .filters input:focus,
+  .filters select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(123,190,26,0.12);
+  }
+
+  .filters .search { flex: 1; min-width: 200px; }
+
+  .filters .clear-btn {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .filters .clear-btn:hover { background: var(--gray-200); }
+
+  .action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .count-info {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-right: auto;
+  }
+
+  .action-bar button {
+    padding: 9px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--transition);
+  }
+
+  .action-bar .primary { background: var(--ink); color: var(--white); }
+  .action-bar .primary:hover { background: var(--green-dark); }
+
+  .action-bar .secondary {
+    background: var(--white);
+    color: var(--ink-soft);
+    border: 1px solid var(--gray-300);
+  }
+
+  .action-bar .secondary:hover { border-color: var(--gray-500); }
+
+  .action-bar .danger {
+    background: var(--white);
+    color: var(--error);
+    border: 1px solid var(--gray-300);
+  }
+
+  .action-bar .danger:hover { background: rgba(217,69,69,0.08); border-color: var(--error); }
+
+  .empty-state {
+    background: var(--white);
+    border: 1px dashed var(--gray-300);
+    border-radius: var(--radius);
+    padding: 60px 24px;
+    text-align: center;
+  }
+
+  .empty-state .ico {
+    width: 56px;
+    height: 56px;
+    background: var(--green-soft);
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-dark);
+  }
+
+  .empty-state h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .empty-state p { color: var(--gray-500); font-size: 14px; }
+
+  .pedido-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    transition: all var(--transition);
+  }
+
+  .pedido-card:hover { border-color: var(--gray-400); }
+
+  .pedido-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+
+  .pedido-head .left { flex: 1; min-width: 0; }
+
+  .pedido-head .check {
+    margin-top: 4px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .pedido-name { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+
+  .pedido-name h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+
+  .pedido-meta {
+    font-size: 12px;
+    color: var(--gray-500);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .pedido-meta .item { display: inline-flex; align-items: center; gap: 4px; }
+
+  .pedido-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .pedido-actions button {
+    background: transparent;
+    color: var(--gray-500);
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+  }
+
+  .pedido-actions button:hover { background: var(--gray-100); color: var(--ink); }
+  .pedido-actions button.del:hover { color: var(--error); background: rgba(217,69,69,0.08); }
+
+  .pedido-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px 18px;
+    font-size: 13px;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  .pedido-body .row { display: flex; flex-direction: column; }
+
+  .pedido-body .row .key {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .pedido-body .row .val { color: var(--ink-soft); font-weight: 500; }
+  .pedido-body .row.full { grid-column: 1 / -1; }
+  .pedido-body .row .val.budget { color: var(--green-dark); font-weight: 600; }
+
+  .editor-section {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .editor-section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .editor-section .sub { color: var(--gray-500); font-size: 13px; margin-bottom: 18px; }
+
+  .field-toggles { display: flex; flex-direction: column; gap: 8px; }
+
+  .field-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+  }
+
+  .field-toggle .name { font-weight: 500; color: var(--ink); font-size: 14px; }
+  .field-toggle .desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .switch input { opacity: 0; width: 0; height: 0; }
+
+  .switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--gray-300);
+    transition: 0.3s;
+    border-radius: 24px;
+  }
+
+  .switch .slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--white);
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .switch input:checked + .slider { background-color: var(--green); }
+  .switch input:checked + .slider::before { transform: translateX(20px); }
+
+  .custom-fields-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+  .custom-field-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .custom-field-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .custom-field-head .info { flex: 1; min-width: 0; }
+  .custom-field-head .name { font-weight: 600; color: var(--ink); font-size: 14px; margin-bottom: 2px; }
+
+  .custom-field-head .type-badge {
+    display: inline-block;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  .custom-field-head .label-text { font-size: 12px; color: var(--gray-500); }
+  .custom-field-options { margin-top: 8px; font-size: 12px; color: var(--gray-700); }
+
+  .add-field-btn {
+    background: var(--ink);
+    color: var(--white);
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition);
+  }
+
+  .add-field-btn:hover { background: var(--green-dark); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,26,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 24px;
+    margin-bottom: 8px;
+    letter-spacing: -0.4px;
+  }
+
+  .modal .modal-sub { color: var(--gray-500); font-size: 13px; margin-bottom: 22px; }
+
+  .modal-row { margin-bottom: 14px; }
+
+  .modal-row label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .modal-row input,
+  .modal-row textarea,
+  .modal-row select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--white);
+    transition: all var(--transition);
+  }
+
+  .modal-row input:focus,
+  .modal-row textarea:focus,
+  .modal-row select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(123,190,26,0.12);
+  }
+
+  .modal-row textarea { resize: vertical; min-height: 70px; }
+  .modal-row .helper { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
+
+  .modal-row.checkbox-row { display: flex; align-items: center; gap: 10px; }
+
+  .modal-row.checkbox-row input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    accent-color: var(--green);
+  }
+
+  .modal-row.checkbox-row label {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+
+  .modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .modal-actions .cancel { background: var(--gray-100); color: var(--gray-700); }
+  .modal-actions .cancel:hover { background: var(--gray-200); }
+  .modal-actions .save { background: var(--ink); color: var(--white); }
+  .modal-actions .save:hover { background: var(--green-dark); }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 300;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.success { background: var(--green-dark); }
+  .toast.error { background: var(--error); }
+
+  @media (max-width: 640px) {
+    .tab-panel { padding: 16px; }
+    .topbar { padding: 14px 16px; }
+    .tabs { padding: 0 16px; }
+    .pedido-body { grid-template-columns: 1fr; }
+    .filters { flex-direction: column; align-items: stretch; }
+    .filters input, .filters select { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HERO BAND (dark) -->
+  <section class="hero-band">
+    <div class="hero">
+      <a href="https://ideiasdeviagem.com.br/mabturismo" target="_blank" rel="noopener" class="inspire-btn">
+        <svg class="sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l1.9 5.8L20 10l-5.6 2.5L12 18l-2.4-5.5L4 10l6.1-1.2L12 3z"/>
+        </svg>
+        <span>Inspire-se</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7"/>
+          <polyline points="7 7 17 7 17 17"/>
+        </svg>
+      </a>
+      <h1>Me conta como seria a sua <em>próxima viagem</em></h1>
+      <p>Com base nessas informações, vou montar uma proposta personalizada pra você</p>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <main class="form-card" id="formCard">
+      <form id="travelForm" novalidate>
+
+        <!-- 01. DESTINO -->
+        <div class="field" data-field-key="destino">
+          <div class="field-num"><span class="num">01</span><span class="line"></span><span>Destino</span></div>
+          <div class="question">Você quer visitar uma cidade ou mais de uma?<span class="required">*</span></div>
+          <div class="helper">Se ainda não decidiu, tudo bem — a gente pode sugerir</div>
+          <div class="choices cols-3">
+            <label class="choice">
+              <input type="radio" name="tipoDestino" value="Uma cidade" required onchange="onTipoDestino()" />
+              <div class="choice-content">Uma cidade</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="tipoDestino" value="Mais de uma cidade" required onchange="onTipoDestino()" />
+              <div class="choice-content">Mais de uma</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="tipoDestino" value="Quero sugestões" required onchange="onTipoDestino()" />
+              <div class="choice-content">Quero sugestões</div>
+            </label>
+          </div>
+          <div class="conditional" id="destinoDetalheContainer">
+            <input type="text" id="destinoDetalhe" name="destinoDetalhe" placeholder="" />
+          </div>
+          <div class="error-msg">Escolha uma opção</div>
+        </div>
+
+        <!-- 02. DATAS -->
+        <div class="field" data-field-key="datas">
+          <div class="field-num"><span class="num">02</span><span class="line"></span><span>Quando</span></div>
+          <div class="question">Quando você pode viajar?<span class="required">*</span></div>
+          <div class="helper">Se ainda tem flexibilidade, coloca uma data aproximada</div>
+          <div class="date-row">
+            <div class="date-field">
+              <label for="dataIda">Ida</label>
+              <input type="date" id="dataIda" name="dataIda" required />
+            </div>
+            <div class="date-field">
+              <label for="dataVolta">Volta</label>
+              <input type="date" id="dataVolta" name="dataVolta" required />
+            </div>
+          </div>
+          <div class="error-msg">Selecione as datas</div>
+        </div>
+
+        <!-- 03. FLEXIBILIDADE -->
+        <div class="field" data-field-key="flexibilidade">
+          <div class="field-num"><span class="num">03</span><span class="line"></span><span>Flexibilidade</span></div>
+          <div class="question">Suas datas são fixas ou tem flexibilidade?<span class="required">*</span></div>
+          <div class="choices cols-2">
+            <label class="choice">
+              <input type="radio" name="flexibilidade" value="Datas fixas" required />
+              <div class="choice-content">Datas fixas</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="flexibilidade" value="Tenho flexibilidade" required />
+              <div class="choice-content">Tenho flexibilidade</div>
+            </label>
+          </div>
+          <div class="error-msg">Escolha uma opção</div>
+        </div>
+
+        <!-- 04. PESSOAS -->
+        <div class="field" data-field-key="pessoas">
+          <div class="field-num"><span class="num">04</span><span class="line"></span><span>Pessoas</span></div>
+          <div class="question">Quantas pessoas vão viajar?<span class="required">*</span></div>
+          <div class="helper">Adultos e crianças incluídos</div>
+          <div class="number-stepper">
+            <button type="button" onclick="stepNumber(-1)" aria-label="Diminuir">−</button>
+            <input type="number" id="pessoas" name="pessoas" value="2" min="1" max="30" required />
+            <button type="button" onclick="stepNumber(1)" aria-label="Aumentar">+</button>
+          </div>
+          <div class="error-msg">Informe quantas pessoas</div>
+        </div>
+
+        <!-- 05. CRIANÇAS -->
+        <div class="field" data-field-key="criancas">
+          <div class="field-num"><span class="num">05</span><span class="line"></span><span>Crianças</span></div>
+          <div class="question">Vai ter criança na viagem?<span class="required">*</span></div>
+          <div class="choices cols-2">
+            <label class="choice">
+              <input type="radio" name="criancas" value="Sim" required onchange="toggleIdades(true)" />
+              <div class="choice-content">Sim</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="criancas" value="Não" required onchange="toggleIdades(false)" />
+              <div class="choice-content">Não</div>
+            </label>
+          </div>
+          <div class="conditional" id="idadesContainer">
+            <input type="text" id="idades" name="idades" placeholder="Ex: 4 e 7 anos" />
+          </div>
+          <div class="error-msg">Escolha uma opção</div>
+        </div>
+
+        <!-- 06. ORÇAMENTO -->
+        <div class="field" data-field-key="orcamento">
+          <div class="field-num"><span class="num">06</span><span class="line"></span><span>Investimento</span></div>
+          <div class="question">Qual o valor total que você pretende investir?<span class="required">*</span></div>
+          <div class="helper">Pra todas as pessoas — ajuda a montar a melhor proposta</div>
+          <div class="choice-list">
+            <label class="choice">
+              <input type="radio" name="orcamento" value="R$ 6.000 a R$ 7.000" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">R$ 6.000 a R$ 7.000</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="orcamento" value="R$ 8.000 a R$ 9.000" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">R$ 8.000 a R$ 9.000</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="orcamento" value="R$ 10.000 a R$ 11.000" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">R$ 10.000 a R$ 11.000</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="orcamento" value="R$ 12.000 a R$ 13.000" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">R$ 12.000 a R$ 13.000</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="orcamento" value="R$ 14.000 a R$ 15.000" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">R$ 14.000 a R$ 15.000</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="orcamento" value="Outro valor" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">Outro valor</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="orcamento" value="Prefiro conversar sobre isso" required onchange="onOrcamentoChange()" />
+              <div class="choice-content">Prefiro conversar sobre isso</div>
+            </label>
+          </div>
+          <div class="conditional" id="orcamentoOutroContainer">
+            <input type="text" id="orcamentoOutro" name="orcamentoOutro" placeholder="Ex: R$ 25.000, R$ 50.000..." />
+          </div>
+          <div class="error-msg">Escolha uma faixa</div>
+        </div>
+
+        <!-- 07. PAGAMENTO -->
+        <div class="field" data-field-key="pagamento">
+          <div class="field-num"><span class="num">07</span><span class="line"></span><span>Pagamento</span></div>
+          <div class="question">Como você pretende pagar?<span class="required">*</span></div>
+          <div class="helper">Se não souber ainda, tudo bem 👍</div>
+          <div class="choices cols-3">
+            <label class="choice">
+              <input type="radio" name="pagamento" value="Cartão" required />
+              <div class="choice-content">Cartão</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="pagamento" value="Boleto" required />
+              <div class="choice-content">Boleto</div>
+            </label>
+            <label class="choice">
+              <input type="radio" name="pagamento" value="Ainda não sei" required />
+              <div class="choice-content">Ainda não sei</div>
+            </label>
+          </div>
+          <div class="error-msg">Escolha uma opção</div>
+        </div>
+
+        <!-- 08. PREFERÊNCIAS -->
+        <div class="field" data-field-key="preferencias">
+          <div class="field-num"><span class="num">08</span><span class="line"></span><span>Preferências</span></div>
+          <div class="question">Tem algo importante pra essa viagem?</div>
+          <div class="helper">Ex: descanso, luxo, lua de mel, comemoração, gastronomia, aventura… conta tudo que importa</div>
+          <textarea id="preferencias" name="preferencias" placeholder="Escreve aqui o que faria essa viagem ser perfeita pra você..."></textarea>
+        </div>
+
+        <!-- 09. NOME -->
+        <div class="field">
+          <div class="field-num"><span class="num">09</span><span class="line"></span><span>Seus dados</span></div>
+          <div class="question">Como você se chama?<span class="required">*</span></div>
+          <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required style="margin-top: 12px;" />
+          <div class="error-msg">Diz seu nome</div>
+        </div>
+
+        <!-- 10. WHATSAPP -->
+        <div class="field">
+          <div class="field-num"><span class="num">10</span><span class="line"></span><span>WhatsApp</span></div>
+          <div class="question">Qual seu WhatsApp?<span class="required">*</span></div>
+          <div class="helper">É por aqui que vou te chamar com a proposta</div>
+          <input type="tel" id="whatsapp" name="whatsapp" placeholder="(47) 99999-9999" required />
+          <div class="error-msg">Informe um WhatsApp válido</div>
+        </div>
+
+        <div class="submit-row">
+          <button type="submit" class="submit-btn">
+            Quero receber minha proposta
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <div class="submit-note">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Suas informações são tratadas com cuidado
+          </div>
+        </div>
+      </form>
+
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2>Perfeito!</h2>
+        <p>Agora vou analisar seu pedido e montar algo alinhado com o que você busca. Em breve te chamo 👍</p>
+        <a href="#" class="whatsapp-link" id="whatsappLink" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          Continuar no WhatsApp
+        </a>
+      </div>
+
+    </main>
+
+    <p class="footer-note">
+      <strong>MAB Turismo</strong>
+      <span class="sep">·</span> Joinville
+      <span class="sep">·</span> Você só precisa escolher viajar. O resto a gente resolve.
+    </p>
+
+  </div>
+
+  <!-- ========== ADMIN ROOT ========== -->
+  <div class="admin-root">
+
+    <div class="login-screen" id="loginScreen">
+      <div class="login-card">
+        <div class="logo-row">
+          <div class="logo-mark">M</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">MAB Turismo</div>
+            <div style="font-size: 10px; color: var(--gray-500); letter-spacing: 2px; text-transform: uppercase;">Admin</div>
+          </div>
+        </div>
+        <h1>Bem-vindo de volta</h1>
+        <div class="sub">Entra com sua senha pra continuar</div>
+        <form id="loginForm">
+          <label for="password">Senha</label>
+          <input type="password" id="password" autocomplete="current-password" />
+          <button type="submit" class="login-btn">Entrar</button>
+          <div class="login-error" id="loginError">Senha incorreta. Tenta de novo.</div>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin-app" id="adminApp">
+
+      <div class="topbar">
+        <div class="topbar-brand">
+          <div class="mark">M</div>
+          <span>MAB Turismo</span>
+          <span class="lbl">Admin</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="topbar-btn" onclick="openFormularioFromAdmin()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Ver formulário
+          </button>
+          <button class="topbar-btn danger" onclick="logout()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sair
+          </button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="pedidos" onclick="switchAdminTab('pedidos')">📋 Pedidos</button>
+        <button class="tab" data-tab="campos" onclick="switchAdminTab('campos')">⚙️ Campos do formulário</button>
+        <button class="tab" data-tab="backup" onclick="switchAdminTab('backup')">💾 Backup & Configurações</button>
+      </div>
+
+      <!-- TAB: PEDIDOS -->
+      <div class="tab-panel active" id="tab-pedidos">
+        <div class="stats" id="stats"></div>
+        <div class="filters">
+          <input type="text" class="search" id="filterSearch" placeholder="🔎 Buscar por nome, destino, telefone..." />
+          <input type="date" id="filterFrom" title="A partir de" />
+          <input type="date" id="filterTo" title="Até" />
+          <select id="filterOrcamento">
+            <option value="">Todos os orçamentos</option>
+          </select>
+          <button class="clear-btn" onclick="clearFilters()">Limpar</button>
+        </div>
+        <div class="action-bar">
+          <span class="count-info" id="countInfo"></span>
+          <button class="secondary" onclick="exportSelectedPDF()">📄 PDF dos selecionados</button>
+          <button class="secondary" onclick="exportAllPDF()">📑 PDF de todos filtrados</button>
+          <button class="danger" onclick="deleteSelected()">🗑 Apagar selecionados</button>
+        </div>
+        <div id="pedidosList"></div>
+      </div>
+
+      <!-- TAB: CAMPOS -->
+      <div class="tab-panel" id="tab-campos">
+        <div class="editor-section">
+          <h2>Campos padrão</h2>
+          <div class="sub">Desligue os campos que não quer mais mostrar pro cliente. Nome, WhatsApp e e-mail ficam sempre ativos.</div>
+          <div class="field-toggles" id="fieldToggles"></div>
+        </div>
+        <div class="editor-section">
+          <h2>Campos personalizados</h2>
+          <div class="sub">Crie perguntas extras pro seu formulário. Aparecem entre Preferências e Seus Dados.</div>
+          <div class="custom-fields-list" id="customFieldsList"></div>
+          <button class="add-field-btn" onclick="openFieldModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Criar novo campo
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB: BACKUP -->
+      <div class="tab-panel" id="tab-backup">
+        <div class="editor-section">
+          <h2>Backup dos pedidos</h2>
+          <div class="sub">Os pedidos ficam salvos no seu navegador. Faz backup periódico (sugerimos a cada 30 dias) pra não perder nada se trocar de aparelho.</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <button class="add-field-btn" onclick="exportBackupJSON()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar tudo (JSON)
+            </button>
+            <button class="add-field-btn" style="background: var(--gray-100); color: var(--ink-soft);" onclick="document.getElementById('importInput').click()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Importar backup
+            </button>
+            <input type="file" id="importInput" accept="application/json" style="display:none" onchange="importBackupJSON(event)" />
+            <button class="add-field-btn" style="background: var(--white); color: var(--error); border: 1px solid var(--gray-300);" onclick="confirmDeleteAll()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+              Apagar todos os pedidos
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-section">
+          <h2>Configuração do formulário</h2>
+          <div class="sub">Salva ou carrega configurações de campos (útil pra usar a mesma estrutura em outro dispositivo).</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <button class="add-field-btn" onclick="exportConfig()">📤 Exportar configurações</button>
+            <button class="add-field-btn" style="background: var(--gray-100); color: var(--ink-soft);" onclick="document.getElementById('configInput').click()">📥 Importar configurações</button>
+            <input type="file" id="configInput" accept="application/json" style="display:none" onchange="importConfig(event)" />
+          </div>
+        </div>
+
+        <div class="editor-section">
+          <h2>Senha do admin</h2>
+          <div class="sub">Mude sua senha de acesso. Cuidado: se esquecer, pode ser necessário limpar os dados do navegador pra recuperar.</div>
+          <button class="add-field-btn" onclick="openPasswordModal()">🔐 Alterar senha</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: FIELD -->
+    <div class="modal-overlay" id="fieldModal">
+      <div class="modal">
+        <h2 id="fieldModalTitle">Novo campo</h2>
+        <div class="modal-sub">Cria uma pergunta personalizada pro formulário.</div>
+        <div class="modal-row">
+          <label>Tipo de pergunta</label>
+          <select id="fieldType" onchange="onFieldTypeChange()">
+            <option value="text">Resposta curta (uma linha)</option>
+            <option value="textarea">Resposta longa (várias linhas)</option>
+            <option value="choice">Múltipla escolha (uma resposta só)</option>
+          </select>
+        </div>
+        <div class="modal-row">
+          <label>Pergunta (visível pro cliente)</label>
+          <input type="text" id="fieldLabel" placeholder="Ex: Tem alguma restrição alimentar?" />
+        </div>
+        <div class="modal-row">
+          <label>Identificador (aparece nos pedidos e no WhatsApp)</label>
+          <input type="text" id="fieldName" placeholder="Ex: Restrições alimentares" />
+          <div class="helper">Use algo curto e claro — como você quer ver na lista de pedidos.</div>
+        </div>
+        <div class="modal-row">
+          <label>Texto de ajuda (opcional)</label>
+          <input type="text" id="fieldHelper" placeholder="Ex: Conta pra gente sobre alergias ou intolerâncias" />
+        </div>
+        <div class="modal-row" id="fieldOptionsRow" style="display: none;">
+          <label>Opções de resposta (uma por linha)</label>
+          <textarea id="fieldOptions" placeholder="Sim&#10;Não&#10;Talvez"></textarea>
+          <div class="helper">Uma por linha. Mínimo 2.</div>
+        </div>
+        <div class="modal-row" id="fieldPlaceholderRow">
+          <label>Placeholder do campo (opcional)</label>
+          <input type="text" id="fieldPlaceholder" placeholder="Ex: Escreva aqui..." />
+        </div>
+        <div class="modal-row checkbox-row">
+          <input type="checkbox" id="fieldRequired" />
+          <label for="fieldRequired">Tornar obrigatório</label>
+        </div>
+        <div class="modal-actions">
+          <button class="cancel" onclick="closeFieldModal()">Cancelar</button>
+          <button class="save" onclick="saveCustomField()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: PASSWORD -->
+    <div class="modal-overlay" id="passwordModal">
+      <div class="modal">
+        <h2>Alterar senha</h2>
+        <div class="modal-sub">Defina uma nova senha pra entrar no admin.</div>
+        <div class="modal-row">
+          <label>Senha atual</label>
+          <input type="password" id="oldPassword" />
+        </div>
+        <div class="modal-row">
+          <label>Nova senha</label>
+          <input type="password" id="newPassword" />
+        </div>
+        <div class="modal-row">
+          <label>Confirmar nova senha</label>
+          <input type="password" id="newPasswordConfirm" />
+        </div>
+        <div class="modal-actions">
+          <button class="cancel" onclick="closePasswordModal()">Cancelar</button>
+          <button class="save" onclick="savePasswordChange()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+  <!-- ========== END ADMIN ROOT ========== -->
+
+<script>
+  const WHATSAPP_NUMBER = '5547992440070';
+
+  // ============ STORAGE & CUSTOM FIELDS ============
+  const STORAGE_KEY = 'mab_pedidos';
+  const CONFIG_KEY = 'mab_form_config';
+
+  // Load admin config (custom fields, hidden fields)
+  function loadFormConfig() {
+    try {
+      const raw = localStorage.getItem(CONFIG_KEY);
+      if (!raw) return { customFields: [], hiddenFields: [] };
+      const cfg = JSON.parse(raw);
+      return {
+        customFields: cfg.customFields || [],
+        hiddenFields: cfg.hiddenFields || []
+      };
+    } catch (e) {
+      return { customFields: [], hiddenFields: [] };
+    }
+  }
+
+  function applyFormConfig() {
+    const cfg = loadFormConfig();
+
+    // Hide fields the admin disabled (by data-field-key attribute)
+    cfg.hiddenFields.forEach(key => {
+      const field = document.querySelector(`[data-field-key="${key}"]`);
+      if (field) {
+        field.style.display = 'none';
+        // Remove required from all inputs inside
+        field.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
+      }
+    });
+
+    // Render custom fields before the contact section
+    if (cfg.customFields.length > 0) {
+      const insertionPoint = document.querySelector('[data-field-key="preferencias"]');
+      if (!insertionPoint) return;
+
+      cfg.customFields.forEach((field, idx) => {
+        const fieldEl = document.createElement('div');
+        fieldEl.className = 'field';
+        fieldEl.dataset.customField = '1';
+        fieldEl.dataset.fieldName = field.name;
+
+        let inputHtml = '';
+        if (field.type === 'text') {
+          inputHtml = `<input type="text" name="custom_${idx}" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''} />`;
+        } else if (field.type === 'textarea') {
+          inputHtml = `<textarea name="custom_${idx}" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''}></textarea>`;
+        } else if (field.type === 'choice') {
+          const opts = field.options.map(o => `
+            <label class="choice">
+              <input type="radio" name="custom_${idx}" value="${o.replace(/"/g, '&quot;')}" ${field.required ? 'required' : ''} />
+              <div class="choice-content">${o}</div>
+            </label>
+          `).join('');
+          inputHtml = `<div class="choice-list">${opts}</div>`;
+        }
+
+        fieldEl.innerHTML = `
+          <div class="field-num"><span class="num">+</span><span class="line"></span><span>Extra</span></div>
+          <div class="question">${field.label}${field.required ? '<span class="required">*</span>' : ''}</div>
+          ${field.helper ? `<div class="helper">${field.helper}</div>` : ''}
+          <div style="margin-top: 12px;">${inputHtml}</div>
+          <div class="error-msg">Por favor preencha esse campo</div>
+        `;
+
+        insertionPoint.insertAdjacentElement('afterend', fieldEl);
+      });
+    }
+  }
+
+  function savePedido(payload) {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      list.unshift(payload);
+      // Keep last 5000 pedidos to avoid localStorage size issues
+      if (list.length > 5000) list.length = 5000;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      return true;
+    } catch (e) {
+      console.error('Save failed:', e);
+      return false;
+    }
+  }
+
+  // Apply config on load
+  applyFormConfig();
+
+  // ============ FORM LOGIC ============
+  function stepNumber(delta) {
+    const input = document.getElementById('pessoas');
+    let v = parseInt(input.value) || 1;
+    v += delta;
+    if (v < 1) v = 1;
+    if (v > 30) v = 30;
+    input.value = v;
+  }
+
+  function toggleIdades(show) {
+    const cont = document.getElementById('idadesContainer');
+    const input = document.getElementById('idades');
+    if (show) {
+      cont.classList.add('show');
+      setTimeout(() => input.focus(), 250);
+    } else {
+      cont.classList.remove('show');
+      input.value = '';
+    }
+  }
+
+  function onTipoDestino() {
+    const tipo = document.querySelector('input[name="tipoDestino"]:checked')?.value;
+    const cont = document.getElementById('destinoDetalheContainer');
+    const input = document.getElementById('destinoDetalhe');
+
+    if (tipo === 'Uma cidade') {
+      input.placeholder = 'Qual cidade? Ex: Paris, Buenos Aires, Maceió...';
+      cont.classList.add('show');
+      setTimeout(() => input.focus(), 250);
+    } else if (tipo === 'Mais de uma cidade') {
+      input.placeholder = 'Quais cidades? Ex: Roma e Paris, Nordeste...';
+      cont.classList.add('show');
+      setTimeout(() => input.focus(), 250);
+    } else if (tipo === 'Quero sugestões') {
+      input.placeholder = 'Tem alguma região ou estilo em mente? (opcional)';
+      cont.classList.add('show');
+    } else {
+      cont.classList.remove('show');
+      input.value = '';
+    }
+  }
+
+  function onOrcamentoChange() {
+    const valor = document.querySelector('input[name="orcamento"]:checked')?.value;
+    const cont = document.getElementById('orcamentoOutroContainer');
+    const input = document.getElementById('orcamentoOutro');
+
+    if (valor === 'Outro valor') {
+      cont.classList.add('show');
+      setTimeout(() => input.focus(), 250);
+    } else {
+      cont.classList.remove('show');
+      input.value = '';
+    }
+  }
+
+  // ===== Date logic: return date depends on outbound =====
+  const dataIdaInput = document.getElementById('dataIda');
+  const dataVoltaInput = document.getElementById('dataVolta');
+
+  // Return date is disabled until outbound is picked
+  dataVoltaInput.disabled = true;
+
+  dataIdaInput.addEventListener('change', () => {
+    if (dataIdaInput.value) {
+      dataVoltaInput.disabled = false;
+      dataVoltaInput.min = dataIdaInput.value;
+      // If existing return is before new outbound, clear it
+      if (dataVoltaInput.value && new Date(dataVoltaInput.value) < new Date(dataIdaInput.value)) {
+        dataVoltaInput.value = '';
+      }
+    } else {
+      dataVoltaInput.disabled = true;
+      dataVoltaInput.value = '';
+    }
+  });
+
+  const whatsappInput = document.getElementById('whatsapp');
+  whatsappInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.slice(0, 11);
+    if (v.length > 10) {
+      v = v.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+    } else if (v.length > 6) {
+      v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+    } else if (v.length > 2) {
+      v = v.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+    } else if (v.length > 0) {
+      v = v.replace(/^(\d{0,2}).*/, '($1');
+    }
+    e.target.value = v.trim();
+  });
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dataIda').setAttribute('min', today);
+
+  const form = document.getElementById('travelForm');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.field.error').forEach(f => f.classList.remove('error'));
+
+    let valid = true;
+    const required = form.querySelectorAll('[required]');
+
+    required.forEach(input => {
+      const field = input.closest('.field');
+      if (input.type === 'radio') {
+        const checked = form.querySelector(`input[name="${input.name}"]:checked`);
+        if (!checked && field) { field.classList.add('error'); valid = false; }
+      } else if (!input.value.trim()) {
+        if (field) field.classList.add('error');
+        valid = false;
+      }
+    });
+
+    const phoneDigits = whatsappInput.value.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      whatsappInput.closest('.field').classList.add('error');
+      valid = false;
+    }
+
+    const ida = document.getElementById('dataIda').value;
+    const volta = document.getElementById('dataVolta').value;
+    if (ida && volta && new Date(volta) < new Date(ida)) {
+      document.getElementById('dataVolta').closest('.field').classList.add('error');
+      valid = false;
+    }
+
+    if (!valid) {
+      const firstError = document.querySelector('.field.error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const data = new FormData(form);
+    const formatDate = (d) => {
+      if (!d) return '—';
+      const [y, m, day] = d.split('-');
+      return `${day}/${m}/${y}`;
+    };
+
+    const tipoDestino = data.get('tipoDestino');
+    const detalhe = data.get('destinoDetalhe');
+    const destinoLine = detalhe ? `${tipoDestino} — ${detalhe}` : tipoDestino;
+
+    const idades = data.get('idades');
+    const criancasField = data.get('criancas') === 'Sim' && idades
+      ? `${data.get('criancas')} (${idades})`
+      : data.get('criancas');
+
+    const orcamentoValor = data.get('orcamento');
+    const orcamentoOutro = data.get('orcamentoOutro');
+    const orcamentoLine = orcamentoValor === 'Outro valor' && orcamentoOutro
+      ? `Outro valor — ${orcamentoOutro}`
+      : orcamentoValor;
+
+    let message =
+`*🌴 Novo pedido de proposta — MAB Turismo*
+
+*👤 Cliente:* ${data.get('nome')}
+*📱 WhatsApp:* ${data.get('whatsapp')}
+*✉️ E-mail:* ${data.get('email')}
+
+———————————————
+
+*📍 Destino:* ${destinoLine}
+*🗓️ Datas:* ${formatDate(data.get('dataIda'))} → ${formatDate(data.get('dataVolta'))}
+*🌀 Flexibilidade:* ${data.get('flexibilidade')}
+*👥 Pessoas:* ${data.get('pessoas')}
+*👶 Crianças:* ${criancasField}
+*💰 Investimento:* ${orcamentoLine}
+*💳 Pagamento:* ${data.get('pagamento')}
+
+*✨ Preferências:*
+${data.get('preferencias') || '— não informado —'}`;
+
+    // Append custom fields if any
+    const customFieldsForMsg = [];
+    document.querySelectorAll('[data-custom-field="1"]').forEach(field => {
+      const fieldName = field.dataset.fieldName;
+      const input = field.querySelector('input[type="text"], textarea, input[type="radio"]:checked');
+      if (input && input.value) {
+        customFieldsForMsg.push(`*${fieldName}:* ${input.value}`);
+      }
+    });
+    if (customFieldsForMsg.length > 0) {
+      message += '\n\n———————————————\n\n' + customFieldsForMsg.join('\n');
+    }
+
+    const encoded = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
+
+    // ===== Save pedido locally =====
+    const customFieldsData = {};
+    document.querySelectorAll('[data-custom-field="1"]').forEach(field => {
+      const fieldName = field.dataset.fieldName;
+      const input = field.querySelector('input[type="text"], textarea, input[type="radio"]:checked');
+      if (input) customFieldsData[fieldName] = input.value;
+    });
+
+    const pedido = {
+      id: Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      created_at: new Date().toISOString(),
+      nome: data.get('nome') || '',
+      whatsapp: data.get('whatsapp') || '',
+      email: data.get('email') || '',
+      destino: destinoLine || '',
+      data_ida: data.get('dataIda') || '',
+      data_volta: data.get('dataVolta') || '',
+      flexibilidade: data.get('flexibilidade') || '',
+      pessoas: data.get('pessoas') || '',
+      criancas: criancasField || '',
+      orcamento: orcamentoLine || '',
+      pagamento: data.get('pagamento') || '',
+      preferencias: data.get('preferencias') || '',
+      camposExtras: customFieldsData,
+      mensagem_whatsapp: message
+    };
+
+    savePedido(pedido);
+
+    document.getElementById('whatsappLink').setAttribute('href', whatsappUrl);
+    form.style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+
+    setTimeout(() => { window.open(whatsappUrl, '_blank'); }, 800);
+    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  form.addEventListener('input', (e) => {
+    const field = e.target.closest('.field');
+    if (field) field.classList.remove('error');
+  });
+  form.addEventListener('change', (e) => {
+    const field = e.target.closest('.field');
+    if (field) field.classList.remove('error');
+  });
+
+  // ============================================================
+  // ADMIN PANEL
+  // ============================================================
+  const SESSION_KEY = 'mab_admin_session';
+  const PASSWORD_KEY = 'mab_admin_pwd';
+  const DEFAULT_PASSWORD = '@Amor13122020';
+
+  const STANDARD_FIELDS = [
+    { key: 'destino', name: 'Destino', desc: 'Onde quer viajar' },
+    { key: 'datas', name: 'Datas', desc: 'Datas de ida e volta' },
+    { key: 'flexibilidade', name: 'Flexibilidade', desc: 'Datas fixas ou flexíveis' },
+    { key: 'pessoas', name: 'Pessoas', desc: 'Quantidade de viajantes' },
+    { key: 'criancas', name: 'Crianças', desc: 'Se tem criança e idades' },
+    { key: 'orcamento', name: 'Investimento', desc: 'Faixa de orçamento' },
+    { key: 'pagamento', name: 'Pagamento', desc: 'Forma de pagamento preferida' },
+    { key: 'preferencias', name: 'Preferências', desc: 'Algo importante pra essa viagem' }
+  ];
+
+  // ===== Routing =====
+  function isAdminRoute() {
+    return window.location.hash === '#admin';
+  }
+
+  function showFormularioMode() {
+    document.body.classList.remove('is-admin');
+  }
+
+  function showAdminMode() {
+    document.body.classList.add('is-admin');
+    if (isAdminLoggedIn()) {
+      showAdminApp();
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('adminApp').classList.remove('show');
+    }
+  }
+
+  function handleRoute() {
+    if (isAdminRoute()) {
+      showAdminMode();
+    } else {
+      showFormularioMode();
+    }
+  }
+
+  window.addEventListener('hashchange', handleRoute);
+
+  // ===== Login =====
+  function getStoredPassword() {
+    return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
+  }
+
+  function isAdminLoggedIn() {
+    return sessionStorage.getItem(SESSION_KEY) === 'active';
+  }
+
+  function adminLogin(pwd) {
+    if (pwd === getStoredPassword()) {
+      sessionStorage.setItem(SESSION_KEY, 'active');
+      showAdminApp();
+      return true;
+    }
+    return false;
+  }
+
+  function logout() {
+    sessionStorage.removeItem(SESSION_KEY);
+    document.getElementById('adminApp').classList.remove('show');
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('password').value = '';
+  }
+
+  function showAdminApp() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').classList.add('show');
+    renderPedidos();
+  }
+
+  function openFormularioFromAdmin() {
+    window.location.hash = '';
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pwd = document.getElementById('password').value;
+    if (!adminLogin(pwd)) {
+      const errEl = document.getElementById('loginError');
+      errEl.classList.add('show');
+      setTimeout(() => errEl.classList.remove('show'), 3000);
+      document.getElementById('password').value = '';
+    }
+  });
+
+  // ===== Data =====
+  function getPedidos() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function savePedidos(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function getConfig() {
+    try {
+      const raw = localStorage.getItem(CONFIG_KEY);
+      if (!raw) return { customFields: [], hiddenFields: [] };
+      const cfg = JSON.parse(raw);
+      return {
+        customFields: cfg.customFields || [],
+        hiddenFields: cfg.hiddenFields || []
+      };
+    } catch (e) {
+      return { customFields: [], hiddenFields: [] };
+    }
+  }
+
+  function saveConfig(cfg) {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+  }
+
+  // ===== Tabs =====
+  function switchAdminTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${name}`).classList.add('active');
+
+    if (name === 'campos') renderFieldEditor();
+    if (name === 'pedidos') renderPedidos();
+  }
+
+  // ===== Toast =====
+  function showToast(msg, type = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show ' + type;
+    setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  // ===== Pedidos =====
+  let currentFilteredList = [];
+
+  function fmtDateTime(iso) {
+    if (!iso) return '—';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+             ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return iso; }
+  }
+
+  function fmtFormDate(d) {
+    if (!d) return '—';
+    const parts = d.split('-');
+    if (parts.length !== 3) return d;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function applyFilters(list) {
+    const search = document.getElementById('filterSearch').value.toLowerCase().trim();
+    const from = document.getElementById('filterFrom').value;
+    const to = document.getElementById('filterTo').value;
+    const orcamento = document.getElementById('filterOrcamento').value;
+
+    return list.filter(p => {
+      if (search) {
+        const haystack = [p.nome, p.whatsapp, p.email, p.destino, p.preferencias].join(' ').toLowerCase();
+        if (!haystack.includes(search)) return false;
+      }
+      if (from) {
+        if (new Date(p.created_at) < new Date(from + 'T00:00:00')) return false;
+      }
+      if (to) {
+        if (new Date(p.created_at) > new Date(to + 'T23:59:59')) return false;
+      }
+      if (orcamento && p.orcamento !== orcamento) return false;
+      return true;
+    });
+  }
+
+  function renderStats(allList) {
+    const total = allList.length;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayCount = allList.filter(p => new Date(p.created_at) >= today).length;
+    const last7 = new Date(); last7.setDate(last7.getDate() - 7);
+    const weekCount = allList.filter(p => new Date(p.created_at) >= last7).length;
+    const last30 = new Date(); last30.setDate(last30.getDate() - 30);
+    const monthCount = allList.filter(p => new Date(p.created_at) >= last30).length;
+
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value"><span class="accent">${total}</span> pedidos</div></div>
+      <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value"><span class="accent">${todayCount}</span></div></div>
+      <div class="stat-card"><div class="stat-label">Últimos 7 dias</div><div class="stat-value"><span class="accent">${weekCount}</span></div></div>
+      <div class="stat-card"><div class="stat-label">Últimos 30 dias</div><div class="stat-value"><span class="accent">${monthCount}</span></div></div>
+    `;
+  }
+
+  function renderOrcamentoFilter(list) {
+    const sel = document.getElementById('filterOrcamento');
+    const previous = sel.value;
+    const unique = [...new Set(list.map(p => p.orcamento).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">Todos os orçamentos</option>' +
+      unique.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+    sel.value = previous;
+  }
+
+  function renderPedidos() {
+    const all = getPedidos();
+    renderStats(all);
+    renderOrcamentoFilter(all);
+
+    const filtered = applyFilters(all);
+    currentFilteredList = filtered;
+
+    const list = document.getElementById('pedidosList');
+
+    document.getElementById('countInfo').textContent =
+      filtered.length === all.length
+        ? `${all.length} pedido${all.length !== 1 ? 's' : ''} no total`
+        : `${filtered.length} de ${all.length} pedidos`;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <h3>${all.length === 0 ? 'Ainda nenhum pedido' : 'Nada encontrado'}</h3>
+          <p>${all.length === 0 ? 'Compartilha o link do formulário pra começar a receber pedidos' : 'Tenta ajustar os filtros'}</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(p => {
+      const customExtras = p.camposExtras && Object.keys(p.camposExtras).length > 0
+        ? Object.entries(p.camposExtras).map(([k, v]) =>
+            `<div class="row"><div class="key">${escapeHtml(k)}</div><div class="val">${escapeHtml(v)}</div></div>`
+          ).join('')
+        : '';
+
+      return `
+        <div class="pedido-card" data-id="${p.id}">
+          <div class="pedido-head">
+            <input type="checkbox" class="check" data-id="${p.id}" />
+            <div class="left">
+              <div class="pedido-name"><h3>${escapeHtml(p.nome || 'Sem nome')}</h3></div>
+              <div class="pedido-meta">
+                <span class="item">📅 ${fmtDateTime(p.created_at)}</span>
+                <span class="item">📱 ${escapeHtml(p.whatsapp || '—')}</span>
+                ${p.email ? `<span class="item">✉️ ${escapeHtml(p.email)}</span>` : ''}
+              </div>
+            </div>
+            <div class="pedido-actions">
+              <button onclick="exportSinglePDF('${p.id}')" title="Exportar PDF">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </button>
+              <button onclick="reopenWhatsApp('${p.id}')" title="Abrir no WhatsApp">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+              </button>
+              <button class="del" onclick="deletePedido('${p.id}')" title="Apagar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="pedido-body">
+            <div class="row"><div class="key">Destino</div><div class="val">${escapeHtml(p.destino || '—')}</div></div>
+            <div class="row"><div class="key">Datas</div><div class="val">${fmtFormDate(p.data_ida)} → ${fmtFormDate(p.data_volta)}</div></div>
+            <div class="row"><div class="key">Flexibilidade</div><div class="val">${escapeHtml(p.flexibilidade || '—')}</div></div>
+            <div class="row"><div class="key">Pessoas</div><div class="val">${escapeHtml(p.pessoas || '—')}</div></div>
+            <div class="row"><div class="key">Crianças</div><div class="val">${escapeHtml(p.criancas || '—')}</div></div>
+            <div class="row"><div class="key">Investimento</div><div class="val budget">${escapeHtml(p.orcamento || '—')}</div></div>
+            <div class="row"><div class="key">Pagamento</div><div class="val">${escapeHtml(p.pagamento || '—')}</div></div>
+            ${customExtras}
+            ${p.preferencias ? `<div class="row full"><div class="key">Preferências</div><div class="val">${escapeHtml(p.preferencias)}</div></div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Filter listeners
+  ['filterSearch', 'filterFrom', 'filterTo', 'filterOrcamento'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', renderPedidos);
+      el.addEventListener('change', renderPedidos);
+    }
+  });
+
+  function clearFilters() {
+    ['filterSearch', 'filterFrom', 'filterTo', 'filterOrcamento'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    renderPedidos();
+  }
+
+  // ===== Pedido actions =====
+  function deletePedido(id) {
+    if (!confirm('Apagar este pedido? Essa ação não pode ser desfeita.')) return;
+    savePedidos(getPedidos().filter(p => p.id !== id));
+    renderPedidos();
+    showToast('Pedido apagado', 'success');
+  }
+
+  function deleteSelected() {
+    const ids = Array.from(document.querySelectorAll('.check:checked')).map(c => c.dataset.id);
+    if (ids.length === 0) { showToast('Selecione ao menos 1 pedido', 'error'); return; }
+    if (!confirm(`Apagar ${ids.length} pedido(s)?`)) return;
+    savePedidos(getPedidos().filter(p => !ids.includes(p.id)));
+    renderPedidos();
+    showToast(`${ids.length} pedido(s) apagado(s)`, 'success');
+  }
+
+  function reopenWhatsApp(id) {
+    const pedido = getPedidos().find(p => p.id === id);
+    if (!pedido) return;
+    const phone = (pedido.whatsapp || '').replace(/\D/g, '');
+    if (!phone) { showToast('WhatsApp do cliente não disponível', 'error'); return; }
+    const fullPhone = phone.length === 11 || phone.length === 10 ? '55' + phone : phone;
+    window.open(`https://wa.me/${fullPhone}`, '_blank');
+  }
+
+  // ===== PDF =====
+  function buildPedidoPDF(doc, pedido, yStart) {
+    const margin = 15;
+    let y = yStart;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const usableWidth = pageWidth - margin * 2;
+
+    doc.setFillColor(26, 26, 26);
+    doc.rect(0, y - 5, pageWidth, 22, 'F');
+    doc.setFillColor(123, 190, 26);
+    doc.rect(margin, y, 4, 12, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MAB Turismo', margin + 8, y + 5);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 180, 180);
+    doc.text('Pedido de proposta', margin + 8, y + 11);
+
+    y += 28;
+
+    doc.setTextColor(26, 26, 26);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text(pedido.nome || 'Sem nome', margin, y);
+
+    y += 6;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text(`Recebido em ${fmtDateTime(pedido.created_at)}`, margin, y);
+
+    y += 10;
+
+    addSectionTitle(doc, 'CONTATO', margin, y, usableWidth); y += 6;
+    y = addRow(doc, 'WhatsApp', pedido.whatsapp || '—', margin, y);
+    y = addRow(doc, 'E-mail', pedido.email || '—', margin, y);
+
+    y += 5;
+    addSectionTitle(doc, 'DETALHES DA VIAGEM', margin, y, usableWidth); y += 6;
+    y = addRow(doc, 'Destino', pedido.destino || '—', margin, y);
+    y = addRow(doc, 'Datas', `${fmtFormDate(pedido.data_ida)} → ${fmtFormDate(pedido.data_volta)}`, margin, y);
+    y = addRow(doc, 'Flexibilidade', pedido.flexibilidade || '—', margin, y);
+    y = addRow(doc, 'Pessoas', pedido.pessoas || '—', margin, y);
+    y = addRow(doc, 'Crianças', pedido.criancas || '—', margin, y);
+    y = addRow(doc, 'Investimento', pedido.orcamento || '—', margin, y, true);
+    y = addRow(doc, 'Pagamento', pedido.pagamento || '—', margin, y);
+
+    if (pedido.camposExtras && Object.keys(pedido.camposExtras).length > 0) {
+      y += 5;
+      addSectionTitle(doc, 'CAMPOS EXTRAS', margin, y, usableWidth); y += 6;
+      Object.entries(pedido.camposExtras).forEach(([k, v]) => {
+        y = addRow(doc, k, v || '—', margin, y);
+      });
+    }
+
+    if (pedido.preferencias) {
+      y += 5;
+      addSectionTitle(doc, 'PREFERÊNCIAS', margin, y, usableWidth); y += 6;
+      doc.setTextColor(60, 60, 60);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const lines = doc.splitTextToSize(pedido.preferencias, usableWidth);
+      lines.forEach(line => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.text(line, margin, y);
+        y += 5;
+      });
+    }
+
+    return y;
+  }
+
+  function addSectionTitle(doc, title, x, y, width) {
+    doc.setFillColor(244, 250, 234);
+    doc.rect(x, y - 3, width, 6, 'F');
+    doc.setTextColor(106, 166, 21);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, x + 2, y + 1);
+  }
+
+  function addRow(doc, key, value, x, y, highlight) {
+    if (y > 275) { doc.addPage(); y = 20; }
+    doc.setTextColor(140, 140, 140);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(key.toUpperCase(), x, y);
+    doc.setTextColor(highlight ? 106 : 40, highlight ? 166 : 40, highlight ? 21 : 40);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', highlight ? 'bold' : 'normal');
+    const lines = doc.splitTextToSize(String(value), 170);
+    doc.text(lines[0], x + 50, y);
+    return y + 7;
+  }
+
+  function exportSinglePDF(id) {
+    const pedido = getPedidos().find(p => p.id === id);
+    if (!pedido) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    buildPedidoPDF(doc, pedido, 15);
+    const pageHeight = doc.internal.pageSize.getHeight();
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(7);
+    doc.text('MAB Turismo · Joinville · Você só precisa escolher viajar. O resto a gente resolve.',
+      doc.internal.pageSize.getWidth() / 2, pageHeight - 8, { align: 'center' });
+    const safeName = (pedido.nome || 'cliente').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    doc.save(`mab-pedido-${safeName}-${pedido.id.split('_')[0]}.pdf`);
+    showToast('PDF gerado', 'success');
+  }
+
+  function exportSelectedPDF() {
+    const ids = Array.from(document.querySelectorAll('.check:checked')).map(c => c.dataset.id);
+    if (ids.length === 0) { showToast('Selecione ao menos 1 pedido', 'error'); return; }
+    const list = getPedidos().filter(p => ids.includes(p.id));
+    exportListPDF(list, `mab-pedidos-selecionados-${ids.length}`);
+  }
+
+  function exportAllPDF() {
+    if (currentFilteredList.length === 0) { showToast('Nenhum pedido pra exportar', 'error'); return; }
+    if (currentFilteredList.length > 50 && !confirm(`Exportar ${currentFilteredList.length} pedidos? Pode demorar.`)) return;
+    exportListPDF(currentFilteredList, `mab-pedidos-${currentFilteredList.length}`);
+  }
+
+  function exportListPDF(list, filename) {
+    if (list.length === 0) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    list.forEach((pedido, idx) => {
+      if (idx > 0) doc.addPage();
+      buildPedidoPDF(doc, pedido, 15);
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.setTextColor(150, 150, 150);
+      doc.setFontSize(7);
+      doc.text(`MAB Turismo · ${idx + 1} de ${list.length}`,
+        doc.internal.pageSize.getWidth() / 2, pageHeight - 8, { align: 'center' });
+    });
+    doc.save(`${filename}.pdf`);
+    showToast(`PDF com ${list.length} pedido(s) gerado`, 'success');
+  }
+
+  // ===== Field editor =====
+  let editingFieldIndex = -1;
+
+  function renderFieldEditor() {
+    const cfg = getConfig();
+    const togglesEl = document.getElementById('fieldToggles');
+    togglesEl.innerHTML = STANDARD_FIELDS.map(f => {
+      const active = !cfg.hiddenFields.includes(f.key);
+      return `
+        <div class="field-toggle">
+          <div>
+            <div class="name">${f.name}</div>
+            <div class="desc">${f.desc}</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" ${active ? 'checked' : ''} onchange="toggleStandardField('${f.key}', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>`;
+    }).join('');
+
+    const customEl = document.getElementById('customFieldsList');
+    if (cfg.customFields.length === 0) {
+      customEl.innerHTML = '<div style="font-size: 13px; color: var(--gray-500); padding: 14px 16px; background: var(--gray-50); border-radius: 10px; border: 1px dashed var(--gray-300); text-align: center;">Nenhum campo personalizado ainda. Cria o primeiro abaixo!</div>';
+    } else {
+      customEl.innerHTML = cfg.customFields.map((f, idx) => {
+        const typeLabel = f.type === 'text' ? 'Texto curto' : f.type === 'textarea' ? 'Texto longo' : 'Múltipla escolha';
+        const optionsHtml = f.type === 'choice' && f.options
+          ? `<div class="custom-field-options">Opções: ${f.options.map(escapeHtml).join(', ')}</div>` : '';
+        return `
+          <div class="custom-field-card">
+            <div class="custom-field-head">
+              <div class="info">
+                <div>
+                  <span class="type-badge">${typeLabel}</span>
+                  <span class="name">${escapeHtml(f.name)}</span>
+                  ${f.required ? '<span style="color: var(--green-dark); font-size: 11px; margin-left: 4px;">obrigatório</span>' : ''}
+                </div>
+                <div class="label-text">"${escapeHtml(f.label)}"</div>
+                ${optionsHtml}
+              </div>
+              <div class="pedido-actions">
+                <button onclick="editCustomField(${idx})" title="Editar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="del" onclick="deleteCustomField(${idx})" title="Apagar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  function toggleStandardField(key, active) {
+    const cfg = getConfig();
+    if (active) {
+      cfg.hiddenFields = cfg.hiddenFields.filter(k => k !== key);
+    } else {
+      if (!cfg.hiddenFields.includes(key)) cfg.hiddenFields.push(key);
+    }
+    saveConfig(cfg);
+    showToast(active ? 'Campo ativado' : 'Campo desativado', 'success');
+  }
+
+  function openFieldModal(index = -1) {
+    editingFieldIndex = index;
+    const modal = document.getElementById('fieldModal');
+    const title = document.getElementById('fieldModalTitle');
+
+    if (index === -1) {
+      title.textContent = 'Novo campo';
+      document.getElementById('fieldType').value = 'text';
+      document.getElementById('fieldLabel').value = '';
+      document.getElementById('fieldName').value = '';
+      document.getElementById('fieldHelper').value = '';
+      document.getElementById('fieldOptions').value = '';
+      document.getElementById('fieldPlaceholder').value = '';
+      document.getElementById('fieldRequired').checked = false;
+    } else {
+      const cfg = getConfig();
+      const f = cfg.customFields[index];
+      title.textContent = 'Editar campo';
+      document.getElementById('fieldType').value = f.type;
+      document.getElementById('fieldLabel').value = f.label;
+      document.getElementById('fieldName').value = f.name;
+      document.getElementById('fieldHelper').value = f.helper || '';
+      document.getElementById('fieldOptions').value = (f.options || []).join('\n');
+      document.getElementById('fieldPlaceholder').value = f.placeholder || '';
+      document.getElementById('fieldRequired').checked = !!f.required;
+    }
+    onFieldTypeChange();
+    modal.classList.add('show');
+  }
+
+  function closeFieldModal() {
+    document.getElementById('fieldModal').classList.remove('show');
+  }
+
+  function onFieldTypeChange() {
+    const type = document.getElementById('fieldType').value;
+    document.getElementById('fieldOptionsRow').style.display = type === 'choice' ? '' : 'none';
+    document.getElementById('fieldPlaceholderRow').style.display = type !== 'choice' ? '' : 'none';
+  }
+
+  function saveCustomField() {
+    const type = document.getElementById('fieldType').value;
+    const label = document.getElementById('fieldLabel').value.trim();
+    const name = document.getElementById('fieldName').value.trim();
+    const helper = document.getElementById('fieldHelper').value.trim();
+    const placeholder = document.getElementById('fieldPlaceholder').value.trim();
+    const required = document.getElementById('fieldRequired').checked;
+    const optionsText = document.getElementById('fieldOptions').value.trim();
+    const options = optionsText.split('\n').map(s => s.trim()).filter(Boolean);
+
+    if (!label) { showToast('Preencha a pergunta', 'error'); return; }
+    if (!name) { showToast('Preencha o identificador', 'error'); return; }
+    if (type === 'choice' && options.length < 2) { showToast('Adicione ao menos 2 opções', 'error'); return; }
+
+    const field = { type, label, name, helper, placeholder, required };
+    if (type === 'choice') field.options = options;
+
+    const cfg = getConfig();
+    if (editingFieldIndex === -1) {
+      cfg.customFields.push(field);
+    } else {
+      cfg.customFields[editingFieldIndex] = field;
+    }
+    saveConfig(cfg);
+    closeFieldModal();
+    renderFieldEditor();
+    showToast('Campo salvo. Recarregue o formulário pra ver as mudanças.', 'success');
+  }
+
+  function editCustomField(index) { openFieldModal(index); }
+
+  function deleteCustomField(index) {
+    if (!confirm('Apagar este campo personalizado?')) return;
+    const cfg = getConfig();
+    cfg.customFields.splice(index, 1);
+    saveConfig(cfg);
+    renderFieldEditor();
+    showToast('Campo apagado', 'success');
+  }
+
+  // ===== Backup =====
+  function exportBackupJSON() {
+    const data = {
+      exported_at: new Date().toISOString(),
+      version: 1,
+      pedidos: getPedidos(),
+      config: getConfig()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mab-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('Backup exportado', 'success');
+  }
+
+  function importBackupJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!Array.isArray(data.pedidos)) { showToast('Arquivo inválido', 'error'); return; }
+        if (!confirm(`Importar ${data.pedidos.length} pedidos? Mescla com os atuais.`)) return;
+        const existing = getPedidos();
+        const existingIds = new Set(existing.map(p => p.id));
+        let added = 0;
+        data.pedidos.forEach(p => { if (!existingIds.has(p.id)) { existing.push(p); added++; } });
+        existing.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        savePedidos(existing);
+        if (data.config && confirm('O arquivo tem configurações. Substituir as atuais?')) {
+          saveConfig(data.config);
+          renderFieldEditor();
+        }
+        renderPedidos();
+        showToast(`${added} pedido(s) importados`, 'success');
+      } catch (err) { showToast('Erro ao ler o arquivo', 'error'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  function confirmDeleteAll() {
+    const count = getPedidos().length;
+    if (count === 0) { showToast('Não há pedidos pra apagar', 'error'); return; }
+    if (!confirm(`Apagar TODOS os ${count} pedido(s)?`)) return;
+    if (!confirm('Tem certeza? Recomendamos exportar backup antes.')) return;
+    savePedidos([]);
+    renderPedidos();
+    showToast('Todos os pedidos apagados', 'success');
+  }
+
+  function exportConfig() {
+    const cfg = getConfig();
+    const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mab-config-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('Configurações exportadas', 'success');
+  }
+
+  function importConfig(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const cfg = JSON.parse(e.target.result);
+        if (!Array.isArray(cfg.customFields) || !Array.isArray(cfg.hiddenFields)) {
+          showToast('Arquivo inválido', 'error'); return;
+        }
+        if (!confirm('Importar configurações? Substitui as atuais.')) return;
+        saveConfig(cfg);
+        renderFieldEditor();
+        showToast('Configurações importadas', 'success');
+      } catch (err) { showToast('Erro ao ler o arquivo', 'error'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  // ===== Password =====
+  function openPasswordModal() {
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('newPasswordConfirm').value = '';
+    document.getElementById('passwordModal').classList.add('show');
+  }
+
+  function closePasswordModal() {
+    document.getElementById('passwordModal').classList.remove('show');
+  }
+
+  function savePasswordChange() {
+    const oldPwd = document.getElementById('oldPassword').value;
+    const newPwd = document.getElementById('newPassword').value;
+    const confirmPwd = document.getElementById('newPasswordConfirm').value;
+
+    if (oldPwd !== getStoredPassword()) { showToast('Senha atual incorreta', 'error'); return; }
+    if (newPwd.length < 6) { showToast('Nova senha precisa ter ao menos 6 caracteres', 'error'); return; }
+    if (newPwd !== confirmPwd) { showToast('As novas senhas não coincidem', 'error'); return; }
+
+    localStorage.setItem(PASSWORD_KEY, newPwd);
+    closePasswordModal();
+    showToast('Senha alterada com sucesso', 'success');
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  });
+
+  // Initial route handling
+  handleRoute();
+</script>
+</body>
+</html>
