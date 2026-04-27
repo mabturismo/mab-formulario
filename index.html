@@ -7238,3 +7238,28 @@ ${data.get('preferencias') || '— não informado —'}`;
 </script>
 </body>
 </html>
+<script>
+const SUPABASE_URL = "https://pyboemnppgeqsfamrbft.supabase.co"
+const SUPABASE_KEY = "sb_publishable_F0By09bat60Izh8RKxMf0A_C4ROQWFL"
+
+async function enviarParaSupabase(dados) {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/pedidos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "return=representation"
+      },
+      body: JSON.stringify(dados)
+    })
+
+    const result = await response.json()
+    console.log("Enviado:", result)
+
+  } catch (error) {
+    console.error("Erro:", error)
+  }
+}
+</script>
