@@ -6338,31 +6338,3 @@ ${data.get('preferencias') || '— não informado —'}`;
 </script>
 </body>
 </html>
-<script>
-const URL = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
-
-// Tenta pegar o formulário principal automaticamente
-const form = document.querySelector("form");
-
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const dados = {};
-  
-  // Pega TODOS os campos automaticamente (sem precisar mapear um por um)
-  new FormData(form).forEach((value, key) => {
-    dados[key] = value;
-  });
-
-  try {
-    await fetch(URL, {
-      method: "POST",
-      body: JSON.stringify(dados)
-    });
-
-    alert("Enviado com sucesso!");
-  } catch (err) {
-    alert("Erro ao enviar");
-  }
-});
-</script>
